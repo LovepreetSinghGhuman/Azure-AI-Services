@@ -1,0 +1,12 @@
+version: "3.8"
+
+services:
+  inference-api:
+    build: .
+    container_name: animal-inference
+    ports:
+      - "8004:8004"
+    volumes:
+      - .:/app
+    environment:
+      - PYTHONUNBUFFERED=1

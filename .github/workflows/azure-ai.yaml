@@ -1,0 +1,21 @@
+name: Azure ML Job Pipeline
+
+on: 
+  workflow_dispatch:
+
+env:
+  GROUP: mlops-demo
+  WORKSPACE: singh-lovepreet-ls
+  LOCATION: westeurope
+
+jobs:
+  azure-pipeline:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Check out code repository
+        uses: actions/checkout@v4
+
+      - name: Azure login
+        uses: azure/login@v2
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}

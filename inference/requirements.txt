@@ -1,0 +1,6 @@
+FastAPI
+TensorFlow
+Pillow
+numpy
+uvicorn
+aiofiles
