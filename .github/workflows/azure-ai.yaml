@@ -7,6 +7,7 @@ env:
   GROUP: mlops-demo
   WORKSPACE: singh-lovepreet-ls
   LOCATION: westeurope
+  COMPUTE_NAME: cli-created-machine
 
 jobs:
   azure-pipeline:
@@ -19,3 +20,39 @@ jobs:
         uses: azure/login@v2
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Azure -- Setup ML extension and defaults
+        uses: azure/CLI@v2.1.0
+        with:
+          azcliversion: 2.64.0
+          inlineScript: |
+            az extension add --name ml -y
+            az configure --defaults group=$GROUP workspace=$WORKSPACE location=$LOCATION
+
+      - name: Azure -- Check if compute exists
+        id: check_compute
+        uses: azure/CLI@v2.1.0
+        with:
+          azcliversion: 2.64.0
+          inlineScript: |
+            if az ml compute show --name $COMPUTE_NAME &> /dev/null; then
+              echo "exists=true" >> $GITHUB_OUTPUT
+            else
+              echo "exists=false" >> $GITHUB_OUTPUT
+            fi
+
+      - name: Azure -- Create compute if not exists
+        if: steps.check_compute.outputs.exists == 'false'
+        uses: azure/CLI@v2.1.0
+        with:
+          azcliversion: 2.64.0
+          inlineScript: |
+            az ml compute create --file ./environment/compute.yaml
+
+      - name: Azure -- Start compute if exists
+        if: steps.check_compute.outputs.exists == 'true'
+        uses: azure/CLI@v2.1.0
+        with:
+          azcliversion: 2.64.0
+          inlineScript: |
+            az ml compute start --name $COMPUTE_NAME
