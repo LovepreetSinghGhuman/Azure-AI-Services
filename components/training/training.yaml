@@ -6,7 +6,7 @@ display_name: Training an AI model
 description: Trains an AI model by inputting a lot of training and testing data.
 
 code: ./code
-environment: azureml:aml-Tensorflow-cli:0.1.0
+environment: ../../environment/combined.yaml
 command: 'python train.py
   --training_folder ${{inputs.training_folder}} --testing_folder ${{inputs.testing_folder}}
   --output_folder ${{outputs.output_folder}}

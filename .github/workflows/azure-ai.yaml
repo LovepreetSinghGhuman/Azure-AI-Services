@@ -56,3 +56,10 @@ jobs:
           azcliversion: 2.64.0
           inlineScript: |
             az ml compute start --name $COMPUTE_NAME
+
+      - name: Azure -- Register combined environment
+        uses: azure/CLI@v2.1.0
+        with:
+          azcliversion: 2.64.0
+          inlineScript: |
+            az ml environment create --file ./environment/combined.yaml

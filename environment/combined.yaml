@@ -1,0 +1,14 @@
+name: animal-ml-env
+channels:
+  - defaults
+  - conda-forge
+dependencies:
+  - python=3.9
+  - pip
+  - pip:
+      - tensorflow
+      - pillow
+      - numpy
+      - scikit-learn
+      - fastapi
+      - uvicorn
