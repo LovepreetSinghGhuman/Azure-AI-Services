@@ -49,13 +49,14 @@ jobs:
           inlineScript: |
             az ml compute create --file ./environment/compute.yaml
 
-      - name: Azure -- Start compute if exists
-        if: steps.check_compute.outputs.exists == 'true'
+      - name: Azure -- Start compute (cold-start compliant)
+        # Always try to start, ignore error if already running
         uses: azure/CLI@v2.1.0
         with:
           azcliversion: 2.64.0
           inlineScript: |
             az ml compute start --name $COMPUTE_NAME
+        continue-on-error: true
 
       - name: Azure -- Register combined environment
         uses: azure/CLI@v2.1.0
@@ -63,3 +64,20 @@ jobs:
           azcliversion: 2.64.0
           inlineScript: |
             az ml environment create --file ./environment/combined.yaml
+
+      - name: Azure -- Submit animals classification job
+        uses: azure/CLI@v2.1.0
+        with:
+          azcliversion: 2.64.0
+          inlineScript: |
+            az ml job create --file ./pipelines/animals-classification.yaml \
+              --stream \
+              --set name=animals-classification-${{ github.sha }}-${{ github.run_id }}
+
+      - name: Azure -- Stop compute machine
+        uses: azure/CLI@v2.1.0
+        with:
+          azcliversion: 2.64.0
+          inlineScript: |
+            az ml compute stop --name $COMPUTE_NAME
+        continue-on-error: true
